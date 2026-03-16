@@ -5,6 +5,7 @@ import com.example.ecommerce.domain.valueobjects.Money;
 import com.example.ecommerce.domain.valueobjects.Quantity;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
 import com.example.ecommerce.infrastructure.persistence.entities.ProductEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,13 +40,16 @@ public class JpaProductRepository implements ProductRepository {
                 .collect(Collectors.toList());
     }
 
+
     @Override
+    @Transactional
     public void save(Product product) {
         ProductEntity entity = mapToEntity(product);
         entityManager.merge(entity);
     }
 
     @Override
+    @Transactional
     public void delete(String id) {
         ProductEntity entity = entityManager.find(ProductEntity.class, id);
         if (entity != null) {

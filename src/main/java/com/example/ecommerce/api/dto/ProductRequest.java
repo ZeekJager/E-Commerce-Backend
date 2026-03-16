@@ -1,7 +1,10 @@
 package com.example.ecommerce.api.dto;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
+@Getter
 public class ProductRequest {
     private String name;
     private String category;
@@ -17,8 +20,4 @@ public class ProductRequest {
         this.stock = stock;
     }
 
-    public String getName() { return name; }
-    public String getCategory() { return category; }
-    public double getPrice() { return price; }
-    public int getStock() { return stock; }
 }

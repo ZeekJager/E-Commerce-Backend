@@ -1,5 +1,8 @@
 package com.example.ecommerce.api.dto;
 
+import lombok.Getter;
+
+@Getter
 public class ProductResponse {
     private final String id;
     private final String name;
@@ -15,9 +18,4 @@ public class ProductResponse {
         this.stock = stock;
     }
 
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getCategory() { return category; }
-    public double getPrice() { return price; }
-    public int getStock() { return stock; }
 }

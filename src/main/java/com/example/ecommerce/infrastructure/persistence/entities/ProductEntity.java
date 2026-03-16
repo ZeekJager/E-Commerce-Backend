@@ -1,10 +1,13 @@
 package com.example.ecommerce.infrastructure.persistence.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "products")
 public class ProductEntity {
+    // Getters and setters
     @Id
     private String id;
     private String name;
@@ -12,19 +15,13 @@ public class ProductEntity {
     private double price;
     private int stock;
 
-    // Getters and setters
-    public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
 
-    public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-    public int getStock() { return stock; }
     public void setStock(int stock) { this.stock = stock; }
 }
