@@ -2,7 +2,9 @@ package com.example.ecommerce.infrastructure.persistence.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
+@Setter
 @Getter
 @Entity
 @Table(name = "products")
@@ -15,13 +17,4 @@ public class ProductEntity {
     private double price;
     private int stock;
 
-    public void setId(String id) { this.id = id; }
-
-    public void setName(String name) { this.name = name; }
-
-    public void setCategory(String category) { this.category = category; }
-
-    public void setPrice(double price) { this.price = price; }
-
-    public void setStock(int stock) { this.stock = stock; }
 }
