@@ -1,20 +1,20 @@
-package com.example.ecommerce.application.commands;
+package com.example.ecommerce.domain.events;
 
-public class UpdateInventoryCommand {
+public class InventoryUpdatedEvent {
     private final String productId;
-    private final int quantity;
+    private final int newQuantity;
 
-    public UpdateInventoryCommand(String productId, int quantity) {
+    public InventoryUpdatedEvent(String productId, int newQuantity) {
         if (productId == null || productId.isBlank()) {
             throw new IllegalArgumentException("Product ID cannot be empty");
         }
-        if (quantity < 0) {
+        if (newQuantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative");
         }
         this.productId = productId;
-        this.quantity = quantity;
+        this.newQuantity = newQuantity;
     }
 
     public String getProductId() { return productId; }
-    public int getQuantity() { return quantity; }
+    public int getNewQuantity() { return newQuantity; }
 }

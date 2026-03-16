@@ -1,25 +1,21 @@
 package com.example.ecommerce.application.queries.handlers;
 
 import com.example.ecommerce.application.common.Result;
-import com.example.ecommerce.application.queries.ListProductsByCategoryQuery;
+import com.example.ecommerce.application.queries.GetProductByIdQuery;
 import com.example.ecommerce.api.dto.ProductResponse;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Component
-public class ListProductsByCategoryHandler {
+public class GetProductByIdHandler {
     private final ProductRepository productRepository;
 
-    public ListProductsByCategoryHandler(ProductRepository productRepository) {
+    public GetProductByIdHandler(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    public Result<List<ProductResponse>> handle(ListProductsByCategoryQuery query) {
-        List<ProductResponse> products = productRepository.findByCategory(query.getCategory())
-                .stream()
+    public Result<ProductResponse> handle(GetProductByIdQuery query) {
+        return productRepository.findById(query.getProductId())
                 .map(product -> new ProductResponse(
                         product.getId(),
                         product.getName(),
@@ -27,11 +23,7 @@ public class ListProductsByCategoryHandler {
                         product.getPrice().amount(),
                         product.getStock().value()
                 ))
-                .collect(Collectors.toList());
-
-        if (products.isEmpty()) {
-            return Result.failure("No products found in category: " + query.getCategory());
-        }
-        return Result.success(products);
+                .map(Result::success)
+                .orElse(Result.failure("Product not found"));
     }
 }

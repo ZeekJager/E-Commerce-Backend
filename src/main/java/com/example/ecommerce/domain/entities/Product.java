@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.entities;
 
+import com.example.ecommerce.domain.events.InventoryUpdatedEvent;
 import com.example.ecommerce.domain.valueobjects.Money;
 import com.example.ecommerce.domain.valueobjects.Quantity;
 
@@ -24,11 +25,6 @@ public class Product {
         this.stock = stock;
     }
 
-    // Business behavior
-    public void updateStock(Quantity newStock) {
-        this.stock = newStock;
-    }
-
     public void updatePrice(Money newPrice) {
         this.price = newPrice;
     }
@@ -39,4 +35,10 @@ public class Product {
     public String getCategory() { return category; }
     public Money getPrice() { return price; }
     public Quantity getStock() { return stock; }
+
+    // Updates stock and returns a domain event for callers that publish events.
+    public InventoryUpdatedEvent updateStock(Quantity newStock) {
+        this.stock = newStock;
+        return new InventoryUpdatedEvent(this.id, newStock.value());
+    }
 }
