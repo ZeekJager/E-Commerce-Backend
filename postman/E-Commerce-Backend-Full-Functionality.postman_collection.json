@@ -1,0 +1,337 @@
+{
+  "info": {
+    "_postman_id": "2f13f6fd-4dc3-4ce5-b2c4-4cb730056251",
+    "name": "E-Commerce Backend - Full Functionality",
+    "description": "End-to-end collection for the E-Commerce backend APIs: product creation, fetch by id, list by category, and order creation. Includes success and failure scenarios with chained variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Create Product A",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Noise Cancelling Headphones\",\n  \"category\": \"electronics\",\n  \"price\": 249.99,\n  \"stock\": 25\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Operation succeeded', function () {",
+              "  pm.expect(json.success).to.eql(true);",
+              "  pm.expect(json.value).to.be.an('object');",
+              "  pm.expect(json.value.id).to.be.a('string').and.not.empty;",
+              "});",
+              "",
+              "pm.collectionVariables.set('productId', json.value.id);",
+              "pm.collectionVariables.set('category', json.value.category);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Create Product B",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Mechanical Keyboard\",\n  \"category\": \"electronics\",\n  \"price\": 129.99,\n  \"stock\": 40\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Second product created', function () {",
+              "  pm.expect(json.success).to.eql(true);",
+              "  pm.expect(json.value.id).to.be.a('string').and.not.empty;",
+              "});",
+              "",
+              "pm.collectionVariables.set('secondProductId', json.value.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Get Product By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products",
+            "{{productId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Fetched product matches stored id', function () {",
+              "  pm.expect(json.success).to.eql(true);",
+              "  pm.expect(json.value.id).to.eql(pm.collectionVariables.get('productId'));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. List Products By Category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/category/{{category}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products",
+            "category",
+            "{{category}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Category listing returns at least one product', function () {",
+              "  pm.expect(json.success).to.eql(true);",
+              "  pm.expect(json.value).to.be.an('array');",
+              "  pm.expect(json.value.length).to.be.greaterThan(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Create Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"productIds\": [\"{{productId}}\", \"{{secondProductId}}\"]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/orders",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Order creation succeeds', function () {",
+              "  pm.expect(json.success).to.eql(true);",
+              "  pm.expect(json.value.id).to.be.a('string').and.not.empty;",
+              "  pm.expect(json.value.customerId).to.eql(pm.collectionVariables.get('customerId'));",
+              "  pm.expect(json.value.productIds).to.be.an('array');",
+              "  pm.expect(json.value.productIds.length).to.eql(2);",
+              "});",
+              "",
+              "pm.test('Total amount follows controller rule', function () {",
+              "  pm.expect(json.value.totalAmount).to.eql(200);",
+              "});",
+              "",
+              "pm.collectionVariables.set('orderId', json.value.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Get Product By Unknown ID (Negative)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/{{unknownProductId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products",
+            "{{unknownProductId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response wrapper indicates failure', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.success).to.eql(false);",
+              "  pm.expect(json.error).to.be.a('string');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. List Products By Missing Category (Negative)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/category/{{unknownCategory}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "products",
+            "category",
+            "{{unknownCategory}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response wrapper indicates failure for empty category', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.success).to.eql(false);",
+              "  pm.expect(json.error).to.be.a('string');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "customerId",
+      "value": "cust-1001"
+    },
+    {
+      "key": "productId",
+      "value": ""
+    },
+    {
+      "key": "secondProductId",
+      "value": ""
+    },
+    {
+      "key": "orderId",
+      "value": ""
+    },
+    {
+      "key": "category",
+      "value": "electronics"
+    },
+    {
+      "key": "unknownProductId",
+      "value": "00000000-0000-0000-0000-000000000000"
+    },
+    {
+      "key": "unknownCategory",
+      "value": "category-does-not-exist"
+    }
+  ]
+}
