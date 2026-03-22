@@ -1,12 +1,14 @@
 package com.example.ecommerce.domain.events;
 
+import java.util.UUID;
+
 public class InventoryUpdatedEvent {
-    private final String productId;
+    private final UUID productId;
     private final int newQuantity;
 
-    public InventoryUpdatedEvent(String productId, int newQuantity) {
-        if (productId == null || productId.isBlank()) {
-            throw new IllegalArgumentException("Product ID cannot be empty");
+    public InventoryUpdatedEvent(UUID productId, int newQuantity) {
+        if (productId == null) {
+            throw new IllegalArgumentException("Product ID cannot be null");
         }
         if (newQuantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative");
@@ -15,6 +17,6 @@ public class InventoryUpdatedEvent {
         this.newQuantity = newQuantity;
     }
 
-    public String getProductId() { return productId; }
+    public UUID getProductId() { return productId; }
     public int getNewQuantity() { return newQuantity; }
 }

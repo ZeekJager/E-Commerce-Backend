@@ -21,7 +21,7 @@ public class GetProductByIdHandler {
 						product.getName(),
 						product.getCategory(),
 						product.getPrice().amount(),
-						product.getStock().value()
+						product.getStock()
 				))
 				.map(Result::success)
 				.orElse(Result.failure("Product not found"));

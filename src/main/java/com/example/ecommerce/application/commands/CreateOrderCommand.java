@@ -1,12 +1,13 @@
 package com.example.ecommerce.application.commands;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CreateOrderCommand {
     private final String customerId;
-    private final List<String> productIds;
+    private final List<UUID> productIds;
 
-    public CreateOrderCommand(String customerId, List<String> productIds) {
+    public CreateOrderCommand(String customerId, List<UUID> productIds) {
         if (customerId == null || customerId.isBlank()) {
             throw new IllegalArgumentException("Customer ID cannot be empty");
         }
@@ -18,5 +19,5 @@ public class CreateOrderCommand {
     }
 
     public String getCustomerId() { return customerId; }
-    public List<String> getProductIds() { return productIds; }
+    public List<UUID> getProductIds() { return productIds; }
 }

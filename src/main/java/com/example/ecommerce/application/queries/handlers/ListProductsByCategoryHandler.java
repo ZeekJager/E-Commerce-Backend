@@ -25,7 +25,7 @@ public class ListProductsByCategoryHandler {
 						product.getName(),
 						product.getCategory(),
 						product.getPrice().amount(),
-						product.getStock().value()
+						product.getStock()
 				))
 				.collect(Collectors.toList());
 

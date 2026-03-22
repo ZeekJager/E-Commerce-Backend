@@ -2,8 +2,9 @@ package com.example.ecommerce.infrastructure.persistence;
 
 import com.example.ecommerce.domain.entities.Product;
 import com.example.ecommerce.domain.valueobjects.Money;
-import com.example.ecommerce.domain.valueobjects.Quantity;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
+
+import java.math.BigDecimal;
 import com.example.ecommerce.infrastructure.persistence.entities.ProductEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
@@ -12,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
 
 @Repository
 public class JpaProductRepository implements ProductRepository {
@@ -24,7 +27,7 @@ public class JpaProductRepository implements ProductRepository {
     }
 
     @Override
-    public Optional<Product> findById(String id) {
+    public Optional<Product> findById(UUID id) {
         ProductEntity entity = entityManager.find(ProductEntity.class, id);
         if (entity == null) return Optional.empty();
         return Optional.of(mapToDomain(entity));
@@ -40,7 +43,6 @@ public class JpaProductRepository implements ProductRepository {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional
     public void save(Product product) {
@@ -50,7 +52,7 @@ public class JpaProductRepository implements ProductRepository {
 
     @Override
     @Transactional
-    public void delete(String id) {
+    public void delete(UUID id) {
         ProductEntity entity = entityManager.find(ProductEntity.class, id);
         if (entity != null) {
             entityManager.remove(entity);
@@ -59,7 +61,7 @@ public class JpaProductRepository implements ProductRepository {
 
     private Product mapToDomain(ProductEntity entity) {
         return new Product(entity.getId(), entity.getName(), entity.getCategory(),
-                new Money(entity.getPrice(), "USD"), new Quantity(entity.getStock()));
+                new Money(BigDecimal.valueOf(entity.getPrice()), "USD"), entity.getStock());
     }
 
     private ProductEntity mapToEntity(Product product) {
@@ -67,8 +69,8 @@ public class JpaProductRepository implements ProductRepository {
         entity.setId(product.getId());
         entity.setName(product.getName());
         entity.setCategory(product.getCategory());
-        entity.setPrice(product.getPrice().amount());
-        entity.setStock(product.getStock().value());
+        entity.setPrice(product.getPrice().amount().doubleValue());
+        entity.setStock(product.getStock());
         return entity;
     }
 }

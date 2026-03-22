@@ -4,17 +4,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Setter
 @Getter
 @Entity
 @Table(name = "products")
 public class ProductEntity {
-    // Getters and setters
     @Id
-    private String id;
+    private UUID id;
     private String name;
     private String category;
     private double price;
     private int stock;
-
 }

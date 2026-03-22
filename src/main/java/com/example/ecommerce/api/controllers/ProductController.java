@@ -9,10 +9,10 @@ import com.example.ecommerce.api.dto.ProductResponse;
 import com.example.ecommerce.application.common.Result;
 import com.example.ecommerce.domain.entities.Product;
 import com.example.ecommerce.domain.valueobjects.Money;
-import com.example.ecommerce.domain.valueobjects.Quantity;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,14 +30,15 @@ public class ProductController {
         this.listProductsByCategoryHandler = listProductsByCategoryHandler;
         this.productRepository = productRepository;
     }
+
     @PostMapping
     public Result<ProductResponse> addProduct(@RequestBody ProductRequest request) {
         Product product = new Product(
-                UUID.randomUUID().toString(),
+                UUID.randomUUID(),
                 request.getName(),
                 request.getCategory(),
-                new Money(request.getPrice(), "USD"),
-                new Quantity(request.getStock())
+                new Money(BigDecimal.valueOf(request.getPrice()), "USD"),
+                request.getStock()
         );
 
         productRepository.save(product);
@@ -47,15 +48,14 @@ public class ProductController {
                 product.getName(),
                 product.getCategory(),
                 product.getPrice().amount(),
-                product.getStock().value()
+                product.getStock()
         );
 
         return Result.success(response);
     }
 
-
     @GetMapping("/{id}")
-    public Result<ProductResponse> getProductById(@PathVariable String id) {
+    public Result<ProductResponse> getProductById(@PathVariable UUID id) {
         return getProductByIdHandler.handle(new GetProductByIdQuery(id));
     }
 

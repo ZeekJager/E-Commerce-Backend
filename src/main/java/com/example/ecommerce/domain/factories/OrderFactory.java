@@ -10,8 +10,7 @@ public class OrderFactory {
 	private OrderFactory() {
 	}
 
-	public static Order createOrder(String customerId, List<String> productIds, Money totalAmount) {
-		// Keep it simple: domain entity currently accepts raw primitives.
-		return new Order(UUID.randomUUID().toString(), customerId, productIds, totalAmount);
+	public static Order createOrder(String customerId, List<UUID> productIds, Money totalAmount) {
+		return new Order(UUID.randomUUID(), customerId, productIds, totalAmount);
 	}
 }
