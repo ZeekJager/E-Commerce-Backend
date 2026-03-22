@@ -46,7 +46,16 @@ public class JpaProductRepository implements ProductRepository {
     @Override
     @Transactional
     public void save(Product product) {
-        ProductEntity entity = mapToEntity(product);
+        ProductEntity entity = entityManager.find(ProductEntity.class, product.getId());
+        if (entity == null) {
+            entity = new ProductEntity();
+            entity.setId(product.getId());
+        }
+        entity.setName(product.getName());
+        entity.setCategory(product.getCategory());
+        entity.setPrice(product.getPrice().amount().doubleValue());
+        entity.setCurrency(product.getPrice().currency());
+        entity.setStock(product.getStock());
         entityManager.merge(entity);
     }
 
@@ -64,14 +73,4 @@ public class JpaProductRepository implements ProductRepository {
                 new Money(BigDecimal.valueOf(entity.getPrice()), entity.getCurrency()), entity.getStock());
     }
 
-    private ProductEntity mapToEntity(Product product) {
-        ProductEntity entity = new ProductEntity();
-        entity.setId(product.getId());
-        entity.setName(product.getName());
-        entity.setCategory(product.getCategory());
-        entity.setPrice(product.getPrice().amount().doubleValue());
-        entity.setCurrency(product.getPrice().currency());
-        entity.setStock(product.getStock());
-        return entity;
-    }
 }

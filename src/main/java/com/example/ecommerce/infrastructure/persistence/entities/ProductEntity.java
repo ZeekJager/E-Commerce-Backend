@@ -13,6 +13,10 @@ import java.util.UUID;
 public class ProductEntity {
     @Id
     private UUID id;
+
+    @Version
+    private Long version;
+
     private String name;
     private String category;
     private double price;

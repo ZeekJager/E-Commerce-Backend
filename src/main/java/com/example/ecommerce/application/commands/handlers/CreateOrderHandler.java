@@ -11,6 +11,7 @@ import com.example.ecommerce.domain.factories.OrderFactory;
 import com.example.ecommerce.domain.valueobjects.Money;
 import com.example.ecommerce.infrastructure.repositories.OrderRepository;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
+import jakarta.persistence.OptimisticLockException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,8 @@ public class CreateOrderHandler {
             return Result.success(order.getId());
         } catch (IllegalArgumentException e) {
             return Result.failure(e.getMessage());
+        } catch (OptimisticLockException e) {
+            return Result.failure("Product stock was modified by another request. Please retry.");
         } catch (Exception e) {
             log.error("Unexpected error creating order for customer {}: {}", command.getCustomerId(), e.getMessage(), e);
             return Result.failure("Failed to create order: " + e.getMessage());

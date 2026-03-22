@@ -33,7 +33,15 @@ public class JpaOrderRepository implements OrderRepository {
     @Override
     @Transactional
     public void save(Order order) {
-        OrderEntity entity = mapToEntity(order);
+        OrderEntity entity = entityManager.find(OrderEntity.class, order.getId());
+        if (entity == null) {
+            entity = new OrderEntity();
+            entity.setId(order.getId());
+        }
+        entity.setCustomerId(order.getCustomerId());
+        entity.setProductIds(order.getProductIds());
+        entity.setTotalAmount(order.getTotalAmount().amount().doubleValue());
+        entity.setCurrency(order.getTotalAmount().currency());
         entityManager.merge(entity);
     }
 
@@ -51,13 +59,4 @@ public class JpaOrderRepository implements OrderRepository {
                 entity.getProductIds(), new Money(BigDecimal.valueOf(entity.getTotalAmount()), entity.getCurrency()));
     }
 
-    private OrderEntity mapToEntity(Order order) {
-        OrderEntity entity = new OrderEntity();
-        entity.setId(order.getId());
-        entity.setCustomerId(order.getCustomerId());
-        entity.setProductIds(order.getProductIds());
-        entity.setTotalAmount(order.getTotalAmount().amount().doubleValue());
-        entity.setCurrency(order.getTotalAmount().currency());
-        return entity;
-    }
 }

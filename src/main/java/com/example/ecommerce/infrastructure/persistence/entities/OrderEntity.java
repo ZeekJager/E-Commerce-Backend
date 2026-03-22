@@ -10,6 +10,10 @@ import java.util.UUID;
 public class OrderEntity {
     @Id
     private UUID id;
+
+    @Version
+    private Long version;
+
     private String customerId;
     private double totalAmount;
     private String currency;
@@ -20,6 +24,9 @@ public class OrderEntity {
     // Getters and setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
+
+    public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
 
     public String getCustomerId() { return customerId; }
     public void setCustomerId(String customerId) { this.customerId = customerId; }
