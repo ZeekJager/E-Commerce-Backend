@@ -1,5 +1,6 @@
 package com.example.ecommerce.api.controllers;
 
+import com.example.ecommerce.api.dto.ErrorResponse;
 import com.example.ecommerce.api.dto.ProductRequest;
 import com.example.ecommerce.api.dto.ProductResponse;
 import com.example.ecommerce.application.common.Result;
@@ -11,6 +12,8 @@ import com.example.ecommerce.domain.entities.Product;
 import com.example.ecommerce.domain.factories.ProductFactory;
 import com.example.ecommerce.domain.valueobjects.Money;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -33,17 +36,15 @@ public class ProductController {
     }
 
     @PostMapping
-    public Result<ProductResponse> addProduct(@RequestBody ProductRequest request) {
+    public ResponseEntity<?> addProduct(@RequestBody ProductRequest request) {
         Product product = ProductFactory.create(
                 request.getName(),
                 request.getCategory(),
                 new Money(BigDecimal.valueOf(request.getPrice()), "USD"),
                 request.getStock()
         );
-
         productRepository.save(product);
-
-        return Result.success(new ProductResponse(
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ProductResponse(
                 product.getId(),
                 product.getName(),
                 product.getCategory(),
@@ -53,12 +54,22 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Result<ProductResponse> getProductById(@PathVariable UUID id) {
-        return getProductByIdHandler.handle(new GetProductByIdQuery(id));
+    public ResponseEntity<?> getProductById(@PathVariable UUID id) {
+        Result<ProductResponse> result = getProductByIdHandler.handle(new GetProductByIdQuery(id));
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(result.getValue());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), result.getError()));
     }
 
     @GetMapping("/category/{category}")
-    public Result<List<ProductResponse>> listProductsByCategory(@PathVariable String category) {
-        return listProductsByCategoryHandler.handle(new ListProductsByCategoryQuery(category));
+    public ResponseEntity<?> listProductsByCategory(@PathVariable String category) {
+        Result<List<ProductResponse>> result = listProductsByCategoryHandler.handle(new ListProductsByCategoryQuery(category));
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(result.getValue());
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), result.getError()));
     }
 }
