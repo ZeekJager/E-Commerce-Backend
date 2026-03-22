@@ -1,17 +1,14 @@
 package com.example.ecommerce.infrastructure.persistence;
 
 import com.example.ecommerce.domain.entities.Order;
+import com.example.ecommerce.domain.repositories.OrderRepository;
 import com.example.ecommerce.domain.valueobjects.Address;
 import com.example.ecommerce.domain.valueobjects.Money;
-import com.example.ecommerce.infrastructure.repositories.OrderRepository;
-
-import java.math.BigDecimal;
 import com.example.ecommerce.infrastructure.persistence.entities.OrderEntity;
-import org.springframework.stereotype.Repository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,12 +18,12 @@ import java.util.stream.Collectors;
 public class JpaOrderRepository implements OrderRepository {
     private final EntityManager entityManager;
 
-    @Autowired
     public JpaOrderRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Order> findById(UUID id) {
         OrderEntity entity = entityManager.find(OrderEntity.class, id);
         if (entity == null) return Optional.empty();
@@ -34,6 +31,7 @@ public class JpaOrderRepository implements OrderRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> findAll() {
         return entityManager.createQuery("SELECT o FROM OrderEntity o", OrderEntity.class)
                 .getResultList()
@@ -52,7 +50,7 @@ public class JpaOrderRepository implements OrderRepository {
         }
         entity.setCustomerId(order.getCustomerId());
         entity.setProductIds(order.getProductIds());
-        entity.setTotalAmount(order.getTotalAmount().amount().doubleValue());
+        entity.setTotalAmount(order.getTotalAmount().amount());
         entity.setCurrency(order.getTotalAmount().currency());
         entity.setShippingStreet(order.getShippingAddress().street());
         entity.setShippingCity(order.getShippingAddress().city());
@@ -78,7 +76,7 @@ public class JpaOrderRepository implements OrderRepository {
                 entity.getShippingCountry()
         );
         return new Order(entity.getId(), entity.getCustomerId(), entity.getProductIds(),
-                new Money(BigDecimal.valueOf(entity.getTotalAmount()), entity.getCurrency()),
+                new Money(entity.getTotalAmount(), entity.getCurrency()),
                 shippingAddress);
     }
 }

@@ -1,32 +1,28 @@
 package com.example.ecommerce.infrastructure.persistence;
 
 import com.example.ecommerce.domain.entities.Product;
+import com.example.ecommerce.domain.repositories.ProductRepository;
 import com.example.ecommerce.domain.valueobjects.Money;
-import com.example.ecommerce.infrastructure.repositories.ProductRepository;
-
-import java.math.BigDecimal;
 import com.example.ecommerce.infrastructure.persistence.entities.ProductEntity;
-import jakarta.transaction.Transactional;
-import org.springframework.stereotype.Repository;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import jakarta.persistence.EntityManager;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
 @Repository
 public class JpaProductRepository implements ProductRepository {
     private final EntityManager entityManager;
 
-    @Autowired
     public JpaProductRepository(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Product> findById(UUID id) {
         ProductEntity entity = entityManager.find(ProductEntity.class, id);
         if (entity == null) return Optional.empty();
@@ -34,6 +30,7 @@ public class JpaProductRepository implements ProductRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> findAll() {
         return entityManager.createQuery("SELECT p FROM ProductEntity p", ProductEntity.class)
                 .getResultList()
@@ -43,8 +40,10 @@ public class JpaProductRepository implements ProductRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> findByCategory(String category) {
-        return entityManager.createQuery("SELECT p FROM ProductEntity p WHERE p.category = :category", ProductEntity.class)
+        return entityManager.createQuery(
+                        "SELECT p FROM ProductEntity p WHERE p.category = :category", ProductEntity.class)
                 .setParameter("category", category)
                 .getResultList()
                 .stream()
@@ -62,7 +61,7 @@ public class JpaProductRepository implements ProductRepository {
         }
         entity.setName(product.getName());
         entity.setCategory(product.getCategory());
-        entity.setPrice(product.getPrice().amount().doubleValue());
+        entity.setPrice(product.getPrice().amount());
         entity.setCurrency(product.getPrice().currency());
         entity.setStock(product.getStock());
         entityManager.merge(entity);
@@ -79,7 +78,6 @@ public class JpaProductRepository implements ProductRepository {
 
     private Product mapToDomain(ProductEntity entity) {
         return new Product(entity.getId(), entity.getName(), entity.getCategory(),
-                new Money(BigDecimal.valueOf(entity.getPrice()), entity.getCurrency()), entity.getStock());
+                new Money(entity.getPrice(), entity.getCurrency()), entity.getStock());
     }
-
 }

@@ -39,6 +39,9 @@ public class Product {
 
     // Updates stock and returns a domain event for callers that publish events.
     public InventoryUpdatedEvent updateStock(int newStock) {
+        if (newStock < 0) {
+            throw new IllegalArgumentException("Stock cannot be negative");
+        }
         this.stock = newStock;
         return new InventoryUpdatedEvent(this.id, newStock);
     }

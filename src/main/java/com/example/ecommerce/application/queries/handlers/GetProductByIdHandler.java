@@ -3,7 +3,7 @@ package com.example.ecommerce.application.queries.handlers;
 import com.example.ecommerce.application.dto.ProductResponse;
 import com.example.ecommerce.application.common.Result;
 import com.example.ecommerce.application.queries.GetProductByIdQuery;
-import com.example.ecommerce.infrastructure.repositories.ProductRepository;
+import com.example.ecommerce.domain.repositories.ProductRepository;
 import org.springframework.stereotype.Component;
 
 @Component

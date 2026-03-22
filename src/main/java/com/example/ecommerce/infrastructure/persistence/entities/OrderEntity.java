@@ -1,10 +1,15 @@
 package com.example.ecommerce.infrastructure.persistence.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
@@ -14,46 +19,29 @@ public class OrderEntity {
     @Version
     private Long version;
 
+    @Column(nullable = false)
     private String customerId;
-    private double totalAmount;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal totalAmount;
+
+    @Column(nullable = false, length = 3)
     private String currency;
 
     @ElementCollection
+    @CollectionTable(name = "order_product_ids", joinColumns = @JoinColumn(name = "order_id"))
+    @Column(name = "product_id", nullable = false)
     private List<UUID> productIds;
 
+    @Column(nullable = false)
     private String shippingStreet;
+
+    @Column(nullable = false)
     private String shippingCity;
+
+    @Column(nullable = false)
     private String shippingZipCode;
+
+    @Column(nullable = false)
     private String shippingCountry;
-
-    // Getters and setters
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
-    public Long getVersion() { return version; }
-    public void setVersion(Long version) { this.version = version; }
-
-    public String getCustomerId() { return customerId; }
-    public void setCustomerId(String customerId) { this.customerId = customerId; }
-
-    public double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
-
-    public List<UUID> getProductIds() { return productIds; }
-    public void setProductIds(List<UUID> productIds) { this.productIds = productIds; }
-
-    public String getCurrency() { return currency; }
-    public void setCurrency(String currency) { this.currency = currency; }
-
-    public String getShippingStreet() { return shippingStreet; }
-    public void setShippingStreet(String shippingStreet) { this.shippingStreet = shippingStreet; }
-
-    public String getShippingCity() { return shippingCity; }
-    public void setShippingCity(String shippingCity) { this.shippingCity = shippingCity; }
-
-    public String getShippingZipCode() { return shippingZipCode; }
-    public void setShippingZipCode(String shippingZipCode) { this.shippingZipCode = shippingZipCode; }
-
-    public String getShippingCountry() { return shippingCountry; }
-    public void setShippingCountry(String shippingCountry) { this.shippingCountry = shippingCountry; }
 }

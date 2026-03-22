@@ -9,7 +9,7 @@ import com.example.ecommerce.application.common.Result;
 import com.example.ecommerce.application.queries.GetOrderByIdQuery;
 import com.example.ecommerce.application.queries.handlers.GetOrderByIdHandler;
 import com.example.ecommerce.domain.valueobjects.Address;
-import com.example.ecommerce.infrastructure.repositories.OrderRepository;
+import com.example.ecommerce.domain.repositories.OrderRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

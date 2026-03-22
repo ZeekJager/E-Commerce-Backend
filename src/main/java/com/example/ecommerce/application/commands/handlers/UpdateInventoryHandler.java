@@ -5,7 +5,7 @@ import com.example.ecommerce.application.common.Result;
 import com.example.ecommerce.domain.entities.Product;
 import com.example.ecommerce.domain.events.InventoryUpdatedEvent;
 import com.example.ecommerce.application.events.handlers.InventoryUpdatedEventHandler;
-import com.example.ecommerce.infrastructure.repositories.ProductRepository;
+import com.example.ecommerce.domain.repositories.ProductRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -13,7 +13,7 @@ import com.example.ecommerce.application.queries.handlers.ListProductsByCategory
 import com.example.ecommerce.domain.entities.Product;
 import com.example.ecommerce.domain.factories.ProductFactory;
 import com.example.ecommerce.domain.valueobjects.Money;
-import com.example.ecommerce.infrastructure.repositories.ProductRepository;
+import com.example.ecommerce.domain.repositories.ProductRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
