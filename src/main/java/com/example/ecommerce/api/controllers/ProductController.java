@@ -1,13 +1,14 @@
 package com.example.ecommerce.api.controllers;
 
 import com.example.ecommerce.api.dto.ProductRequest;
+import com.example.ecommerce.api.dto.ProductResponse;
+import com.example.ecommerce.application.common.Result;
 import com.example.ecommerce.application.queries.GetProductByIdQuery;
 import com.example.ecommerce.application.queries.ListProductsByCategoryQuery;
 import com.example.ecommerce.application.queries.handlers.GetProductByIdHandler;
 import com.example.ecommerce.application.queries.handlers.ListProductsByCategoryHandler;
-import com.example.ecommerce.api.dto.ProductResponse;
-import com.example.ecommerce.application.common.Result;
 import com.example.ecommerce.domain.entities.Product;
+import com.example.ecommerce.domain.factories.ProductFactory;
 import com.example.ecommerce.domain.valueobjects.Money;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,7 @@ public class ProductController {
 
     @PostMapping
     public Result<ProductResponse> addProduct(@RequestBody ProductRequest request) {
-        Product product = new Product(
-                UUID.randomUUID(),
+        Product product = ProductFactory.create(
                 request.getName(),
                 request.getCategory(),
                 new Money(BigDecimal.valueOf(request.getPrice()), "USD"),
@@ -43,15 +43,13 @@ public class ProductController {
 
         productRepository.save(product);
 
-        ProductResponse response = new ProductResponse(
+        return Result.success(new ProductResponse(
                 product.getId(),
                 product.getName(),
                 product.getCategory(),
                 product.getPrice().amount(),
                 product.getStock()
-        );
-
-        return Result.success(response);
+        ));
     }
 
     @GetMapping("/{id}")

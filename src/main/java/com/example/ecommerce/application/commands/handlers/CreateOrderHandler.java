@@ -2,11 +2,12 @@ package com.example.ecommerce.application.commands.handlers;
 
 import com.example.ecommerce.application.commands.CreateOrderCommand;
 import com.example.ecommerce.application.common.Result;
+import com.example.ecommerce.application.events.handlers.OrderCreatedEventHandler;
+import com.example.ecommerce.domain.aggregates.OrderAggregate;
 import com.example.ecommerce.domain.entities.Order;
 import com.example.ecommerce.domain.entities.Product;
-import com.example.ecommerce.domain.factories.OrderFactory;
 import com.example.ecommerce.domain.events.OrderCreatedEvent;
-import com.example.ecommerce.application.events.handlers.OrderCreatedEventHandler;
+import com.example.ecommerce.domain.factories.OrderFactory;
 import com.example.ecommerce.domain.valueobjects.Money;
 import com.example.ecommerce.infrastructure.repositories.OrderRepository;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
@@ -38,8 +39,7 @@ public class CreateOrderHandler {
             // Fetch all products and validate they exist and have stock
             List<Product> products = new ArrayList<>();
             for (UUID productId : command.getProductIds()) {
-                Product product = productRepository.findById(productId)
-                        .orElse(null);
+                Product product = productRepository.findById(productId).orElse(null);
                 if (product == null) {
                     return Result.failure("Product not found: " + productId);
                 }
@@ -49,18 +49,27 @@ public class CreateOrderHandler {
                 products.add(product);
             }
 
-            // Calculate real total from actual product prices
+            // Sum product prices to get the total needed to construct the Order
             BigDecimal total = products.stream()
                     .map(p -> p.getPrice().amount())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             Money totalAmount = new Money(total, "USD");
 
-            // Create and persist the order
+            // Create order, then wrap in aggregate for business operations
             Order order = OrderFactory.createOrder(command.getCustomerId(), command.getProductIds(), totalAmount);
+            OrderAggregate aggregate = new OrderAggregate(order, products);
+
+            // Reduce stock via aggregate and persist each updated product
+            aggregate.reduceStock();
+            for (Product product : aggregate.getProducts()) {
+                productRepository.save(product);
+            }
+
+            // Persist order
             orderRepository.save(order);
 
-            // Raise domain event
-            OrderCreatedEvent event = new OrderCreatedEvent(order.getId(), order.getCustomerId());
+            // Raise domain event via aggregate
+            OrderCreatedEvent event = aggregate.createOrderEvent();
             orderCreatedEventHandler.handle(event);
 
             return Result.success(order.getId());
