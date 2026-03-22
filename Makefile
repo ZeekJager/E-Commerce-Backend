@@ -1,7 +1,8 @@
 .PHONY: dev_up dev_down build test logs ps clean
 
 dev_up:
-	docker compose up --build
+	docker compose up -d db
+	./mvnw spring-boot:run
 
 dev_down:
 	docker compose down
