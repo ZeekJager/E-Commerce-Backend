@@ -12,7 +12,7 @@ import com.example.ecommerce.domain.valueobjects.Money;
 import com.example.ecommerce.infrastructure.repositories.OrderRepository;
 import com.example.ecommerce.infrastructure.repositories.ProductRepository;
 import jakarta.persistence.OptimisticLockException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

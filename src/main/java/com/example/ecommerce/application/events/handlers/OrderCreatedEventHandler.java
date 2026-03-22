@@ -29,7 +29,8 @@ public class OrderCreatedEventHandler {
                 + ", " + address.zipCode() + ", " + address.country();
 
         notificationService.notify("Order " + orderId + " created for customer " + customerId);
-        emailService.sendEmail(customerId, "Your order " + orderId + " has been placed successfully.");
+        // TODO: resolve customer email from a customer lookup service
+        // emailService.sendEmail(customerEmail, "Your order " + orderId + " has been placed successfully.");
         shippingService.bookShipment(orderId, formattedAddress);
     }
 }

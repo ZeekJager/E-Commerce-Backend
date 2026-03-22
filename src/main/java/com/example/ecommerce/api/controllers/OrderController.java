@@ -2,7 +2,7 @@ package com.example.ecommerce.api.controllers;
 
 import com.example.ecommerce.api.dto.ErrorResponse;
 import com.example.ecommerce.api.dto.OrderRequest;
-import com.example.ecommerce.api.dto.OrderResponse;
+import com.example.ecommerce.application.dto.OrderResponse;
 import com.example.ecommerce.application.commands.CreateOrderCommand;
 import com.example.ecommerce.application.commands.handlers.CreateOrderHandler;
 import com.example.ecommerce.application.common.Result;

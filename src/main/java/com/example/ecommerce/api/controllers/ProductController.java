@@ -2,8 +2,10 @@ package com.example.ecommerce.api.controllers;
 
 import com.example.ecommerce.api.dto.ErrorResponse;
 import com.example.ecommerce.api.dto.ProductRequest;
-import com.example.ecommerce.api.dto.ProductResponse;
+import com.example.ecommerce.application.commands.UpdateInventoryCommand;
+import com.example.ecommerce.application.commands.handlers.UpdateInventoryHandler;
 import com.example.ecommerce.application.common.Result;
+import com.example.ecommerce.application.dto.ProductResponse;
 import com.example.ecommerce.application.queries.GetProductByIdQuery;
 import com.example.ecommerce.application.queries.ListProductsByCategoryQuery;
 import com.example.ecommerce.application.queries.handlers.GetProductByIdHandler;
@@ -28,13 +30,16 @@ import java.util.stream.Collectors;
 public class ProductController {
     private final GetProductByIdHandler getProductByIdHandler;
     private final ListProductsByCategoryHandler listProductsByCategoryHandler;
+    private final UpdateInventoryHandler updateInventoryHandler;
     private final ProductRepository productRepository;
 
     public ProductController(GetProductByIdHandler getProductByIdHandler,
                              ListProductsByCategoryHandler listProductsByCategoryHandler,
+                             UpdateInventoryHandler updateInventoryHandler,
                              ProductRepository productRepository) {
         this.getProductByIdHandler = getProductByIdHandler;
         this.listProductsByCategoryHandler = listProductsByCategoryHandler;
+        this.updateInventoryHandler = updateInventoryHandler;
         this.productRepository = productRepository;
     }
 
@@ -83,6 +88,17 @@ public class ProductController {
                 new Money(request.getPrice(), "USD"), request.getStock());
         productRepository.save(updated);
         return ResponseEntity.ok(toResponse(updated));
+    }
+
+    @PatchMapping("/{id}/stock")
+    public ResponseEntity<?> updateStock(@PathVariable UUID id, @RequestParam int quantity) {
+        Result<Void> result = updateInventoryHandler.handle(new UpdateInventoryCommand(id, quantity));
+        if (result.isSuccess()) {
+            return ResponseEntity.noContent().build();
+        }
+        String error = result.getError();
+        HttpStatus status = error.contains("not found") ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
+        return ResponseEntity.status(status).body(new ErrorResponse(status.value(), error));
     }
 
     @DeleteMapping("/{id}")

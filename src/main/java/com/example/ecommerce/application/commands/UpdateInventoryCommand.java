@@ -1,10 +1,7 @@
 package com.example.ecommerce.application.commands;
 
-import lombok.Getter;
-
 import java.util.UUID;
 
-@Getter
 public class UpdateInventoryCommand {
     private final UUID productId;
     private final int quantity;
@@ -19,4 +16,7 @@ public class UpdateInventoryCommand {
         this.productId = productId;
         this.quantity = quantity;
     }
+
+    public UUID getProductId() { return productId; }
+    public int getQuantity() { return quantity; }
 }

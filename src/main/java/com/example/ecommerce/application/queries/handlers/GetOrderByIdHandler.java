@@ -1,6 +1,6 @@
 package com.example.ecommerce.application.queries.handlers;
 
-import com.example.ecommerce.api.dto.OrderResponse;
+import com.example.ecommerce.application.dto.OrderResponse;
 import com.example.ecommerce.application.common.Result;
 import com.example.ecommerce.application.queries.GetOrderByIdQuery;
 import com.example.ecommerce.domain.valueobjects.Address;
