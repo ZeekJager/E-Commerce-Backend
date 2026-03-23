@@ -44,4 +44,6 @@ public class OrderAggregate {
     // Getters
     public Order getOrder() { return order; }
     public List<Product> getProducts() { return products; }
+
+    //
 }

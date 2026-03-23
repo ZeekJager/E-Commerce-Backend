@@ -3,15 +3,22 @@ package com.example.ecommerce.domain.entities;
 import com.example.ecommerce.domain.events.InventoryUpdatedEvent;
 import com.example.ecommerce.domain.valueobjects.Money;
 import com.example.ecommerce.domain.valueobjects.Quantity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.UUID;
+@Getter
+@Setter
 public class Product {
-    private final String id;          // Identity
+    private final UUID id;          // Identity
     private final String name;
-    private final String category;
+    private final String category; // make it class
     private Money price;
-    private Quantity stock;
+    private Quantity stock; // don't make it class
 
-    public Product(String id, String name, String category, Money price, Quantity stock) {
+    public Product(UUID id, String name, String category, Money price, Quantity stock) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Product name cannot be empty");
         }
@@ -29,12 +36,7 @@ public class Product {
         this.price = newPrice;
     }
 
-    // Getters
-    public String getId() { return id; }
-    public String getName() { return name; }
-    public String getCategory() { return category; }
-    public Money getPrice() { return price; }
-    public Quantity getStock() { return stock; }
+
 
     // Updates stock and returns a domain event for callers that publish events.
     public InventoryUpdatedEvent updateStock(Quantity newStock) {

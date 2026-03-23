@@ -2,14 +2,15 @@ package com.example.ecommerce.domain.entities;
 
 import com.example.ecommerce.domain.valueobjects.Money;
 import java.util.List;
+import java.util.UUID;
 
 public class Order {
-    private final String id;              // Identity
+    private final UUID id;              // Identity
     private final String customerId;
     private final List<String> productIds;
     private final Money totalAmount;
 
-    public Order(String id, String customerId, List<String> productIds, Money totalAmount) {
+    public Order(UUID id, String customerId, List<String> productIds, Money totalAmount) {
         if (productIds == null || productIds.isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one product");
         }

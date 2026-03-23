@@ -28,6 +28,38 @@ public class ProductController {
                              ListProductsByCategoryHandler listProductsByCategoryHandler) {
         this.getProductByIdHandler = getProductByIdHandler;
         this.listProductsByCategoryHandler = listProductsByCategoryHandler;
+<<<<<<< Updated upstream
+=======
+        this.productRepository = productRepository;
+    }
+    @PostMapping
+    public Result<ProductResponse> addProduct(@RequestBody ProductRequest request) {
+        Product product = new Product(
+                UUID.randomUUID().toUUID(),
+                request.getName(),
+                request.getCategory(),
+                new Money(request.getPrice(), "USD"),
+                new Quantity(request.getStock())
+        );
+
+        productRepository.save(product);
+
+        ProductResponse response = new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice().amount(),
+                product.getStock().value()
+        );
+
+        return Result.success(response);
+    }
+
+
+    @GetMapping("/{id}")
+    public Result<ProductResponse> getProductById(@PathVariable String id) {
+        return getProductByIdHandler.handle(new GetProductByIdQuery(id));
+>>>>>>> Stashed changes
     }
 
     @GetMapping("/category/{category}")

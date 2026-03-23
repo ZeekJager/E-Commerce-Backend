@@ -1,14 +1,23 @@
 package com.example.ecommerce.api.dto;
 
+<<<<<<< Updated upstream
 import java.util.Objects;
 
+=======
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.Objects;
+
+@Getter
+@NoArgsConstructor
+>>>>>>> Stashed changes
 public class ProductRequest {
     private String name;
     private String category;
     private double price;
     private int stock;
 
-    public ProductRequest() {}
 
     public ProductRequest(String name, String category, double price, int stock) {
         this.name = Objects.requireNonNull(name, "Name cannot be null");
