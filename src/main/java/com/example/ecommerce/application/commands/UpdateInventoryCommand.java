@@ -1,15 +1,14 @@
 package com.example.ecommerce.application.commands;
 
-import lombok.Getter;
+import java.util.UUID;
 
-@Getter
 public class UpdateInventoryCommand {
-    private final String productId;
+    private final UUID productId;
     private final int quantity;
 
-    public UpdateInventoryCommand(String productId, int quantity) {
-        if (productId == null || productId.isBlank()) {
-            throw new IllegalArgumentException("Product ID cannot be empty");
+    public UpdateInventoryCommand(UUID productId, int quantity) {
+        if (productId == null) {
+            throw new IllegalArgumentException("Product ID cannot be null");
         }
         if (quantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative");
@@ -18,4 +17,6 @@ public class UpdateInventoryCommand {
         this.quantity = quantity;
     }
 
+    public UUID getProductId() { return productId; }
+    public int getQuantity() { return quantity; }
 }

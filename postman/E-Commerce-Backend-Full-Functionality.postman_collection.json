@@ -1,0 +1,799 @@
+{
+  "info": {
+    "_postman_id": "e4a1b2c3-d4e5-4f67-a891-b2c3d4e5f678",
+    "name": "E-Commerce Backend",
+    "description": "Complete collection for all E-Commerce API endpoints.\n\n**Authentication:** Write endpoints require `X-API-Key` header. GET /api/products/** is public.\n\nRun the folders in order: Products → Orders → Error Cases.\nProduct and order IDs are captured automatically via test scripts.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",    "value": "http://localhost:8080" },
+    { "key": "apiKey",     "value": "dev-secret-key" },
+    { "key": "productAId", "value": "" },
+    { "key": "productBId", "value": "" },
+    { "key": "productCId", "value": "" },
+    { "key": "orderId",    "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product A — Laptop",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Location header present', () => pm.expect(pm.response.headers.get('Location')).to.include('/api/products/'));",
+                  "const j = pm.response.json();",
+                  "pm.test('Response has product fields', () => {",
+                  "  pm.expect(j.id).to.be.a('string');",
+                  "  pm.expect(j.name).to.eql('ProBook Laptop 15');",
+                  "  pm.expect(j.price).to.eql(1299.99);",
+                  "  pm.expect(j.stock).to.eql(50);",
+                  "});",
+                  "pm.collectionVariables.set('productAId', j.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ProBook Laptop 15\",\n  \"category\": \"electronics\",\n  \"price\": 1299.99,\n  \"stock\": 50\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "Create Product B — Headphones",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const j = pm.response.json();",
+                  "pm.test('Response fields correct', () => {",
+                  "  pm.expect(j.name).to.eql('SoundMax Pro Headphones');",
+                  "  pm.expect(j.category).to.eql('electronics');",
+                  "  pm.expect(j.stock).to.eql(120);",
+                  "});",
+                  "pm.collectionVariables.set('productBId', j.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"SoundMax Pro Headphones\",\n  \"category\": \"electronics\",\n  \"price\": 249.99,\n  \"stock\": 120\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "Create Product C — Desk Chair",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "const j = pm.response.json();",
+                  "pm.test('Category is furniture', () => pm.expect(j.category).to.eql('furniture'));",
+                  "pm.collectionVariables.set('productCId', j.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ErgoElite Desk Chair\",\n  \"category\": \"furniture\",\n  \"price\": 499.00,\n  \"stock\": 15\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "List All Products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns array with at least 3 items', () => {",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j).to.be.an('array');",
+                  "  pm.expect(j.length).to.be.at.least(3);",
+                  "});",
+                  "pm.test('Each product has required fields', () => {",
+                  "  pm.response.json().forEach(p => {",
+                  "    pm.expect(p).to.have.all.keys('id','name','category','price','stock');",
+                  "  });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "Get Product A by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('ID matches', () => pm.expect(j.id).to.eql(pm.collectionVariables.get('productAId')));",
+                  "pm.test('Name correct', () => pm.expect(j.name).to.eql('ProBook Laptop 15'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productAId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","{{productAId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Product A — Price Change",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Price updated', () => pm.expect(j.price).to.eql(1199.99));",
+                  "pm.test('Stock updated', () => pm.expect(j.stock).to.eql(45));",
+                  "pm.test('ID unchanged', () => pm.expect(j.id).to.eql(pm.collectionVariables.get('productAId')));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ProBook Laptop 15\",\n  \"category\": \"electronics\",\n  \"price\": 1199.99,\n  \"stock\": 45\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productAId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","{{productAId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Stock for Product B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.response.to.have.status(204));",
+                  "pm.test('Empty body', () => pm.expect(pm.response.text()).to.be.empty);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productBId}}/stock?quantity=200",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","{{productBId}}","stock"],
+              "query": [{ "key": "quantity", "value": "200" }]
+            }
+          }
+        },
+        {
+          "name": "List by Category — electronics (page 0)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Returns array', () => pm.expect(j).to.be.an('array'));",
+                  "pm.test('All items are electronics', () => {",
+                  "  j.forEach(p => pm.expect(p.category).to.eql('electronics'));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/category/electronics?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","category","electronics"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List by Category — furniture",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Has at least one furniture item', () => pm.expect(j.length).to.be.at.least(1));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/category/furniture",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","category","furniture"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product C",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.response.to.have.status(204));",
+                  "pm.test('Body is empty', () => pm.expect(pm.response.text()).to.be.empty);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productCId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","{{productCId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "pm.test('Location header present', () => pm.expect(pm.response.headers.get('Location')).to.include('/api/orders/'));",
+                  "const j = pm.response.json();",
+                  "pm.test('Order fields present', () => {",
+                  "  pm.expect(j.id).to.be.a('string');",
+                  "  pm.expect(j.customerId).to.eql('cust-7341');",
+                  "  pm.expect(j.productIds).to.be.an('array').with.lengthOf(2);",
+                  "  pm.expect(j.totalAmount).to.be.a('number').and.gt(0);",
+                  "  pm.expect(j.shippingAddress).to.include('742 Evergreen Terrace');",
+                  "});",
+                  "pm.collectionVariables.set('orderId', j.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"cust-7341\",\n  \"productIds\": [\n    \"{{productAId}}\",\n    \"{{productBId}}\"\n  ],\n  \"shippingAddress\": {\n    \"street\": \"742 Evergreen Terrace\",\n    \"city\": \"Springfield\",\n    \"zipCode\": \"62701\",\n    \"country\": \"US\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('ID matches', () => pm.expect(j.id).to.eql(pm.collectionVariables.get('orderId')));",
+                  "pm.test('Customer ID correct', () => pm.expect(j.customerId).to.eql('cust-7341'));",
+                  "pm.test('Total amount positive', () => pm.expect(j.totalAmount).to.be.gt(0));",
+                  "pm.test('Shipping address formatted', () => pm.expect(j.shippingAddress).to.be.a('string').and.not.empty);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","orders","{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "List All Orders",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Returns array with at least 1 order', () => {",
+                  "  pm.expect(j).to.be.an('array');",
+                  "  pm.expect(j.length).to.be.at.least(1);",
+                  "});",
+                  "pm.test('Each order has required fields', () => {",
+                  "  j.forEach(o => {",
+                  "    pm.expect(o).to.have.all.keys('id','customerId','productIds','totalAmount','shippingAddress');",
+                  "  });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Cases",
+      "item": [
+        {
+          "name": "401 — Missing API Key on write endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));",
+                  "const j = pm.response.json();",
+                  "pm.test('Error message present', () => pm.expect(j.error).to.include('API key'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test\",\n  \"category\": \"test\",\n  \"price\": 10.00,\n  \"stock\": 5\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "401 — Wrong API Key",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('401 Unauthorized', () => pm.response.to.have.status(401));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "wrong-key" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test\",\n  \"category\": \"test\",\n  \"price\": 10.00,\n  \"stock\": 5\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "400 — Create Product with missing name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "const j = pm.response.json();",
+                  "pm.test('Validation error mentions name', () => pm.expect(j.error).to.include('name'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"electronics\",\n  \"price\": 99.99,\n  \"stock\": 10\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "400 — Create Product with negative price",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "const j = pm.response.json();",
+                  "pm.test('Validation error mentions price', () => pm.expect(j.error).to.include('price'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bad Product\",\n  \"category\": \"test\",\n  \"price\": -5.00,\n  \"stock\": 10\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/products", "host": ["{{baseUrl}}"], "path": ["api","products"] }
+          }
+        },
+        {
+          "name": "404 — Get Product with unknown ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+                  "const j = pm.response.json();",
+                  "pm.test('Error message present', () => pm.expect(j.error).to.include('not found'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        },
+        {
+          "name": "404 — Update non-existent Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ghost\",\n  \"category\": \"test\",\n  \"price\": 9.99,\n  \"stock\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        },
+        {
+          "name": "404 — Delete non-existent Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","products","00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        },
+        {
+          "name": "404 — Create Order with unknown product ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+                  "const j = pm.response.json();",
+                  "pm.test('Error mentions product not found', () => pm.expect(j.error).to.include('not found'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"cust-ghost\",\n  \"productIds\": [\"00000000-0000-0000-0000-000000000000\"],\n  \"shippingAddress\": {\n    \"street\": \"1 Ghost Lane\",\n    \"city\": \"Nowhere\",\n    \"zipCode\": \"00000\",\n    \"country\": \"US\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "409 — Create Order for out-of-stock product",
+          "event": [
+            {
+              "listen": "pre-request",
+              "script": {
+                "exec": [
+                  "// First create a product with stock=0, save its ID for this test",
+                  "pm.sendRequest({",
+                  "  url: pm.collectionVariables.get('baseUrl') + '/api/products',",
+                  "  method: 'POST',",
+                  "  header: { 'Content-Type': 'application/json', 'X-API-Key': pm.collectionVariables.get('apiKey') },",
+                  "  body: { mode: 'raw', raw: JSON.stringify({ name: 'Sold Out Widget', category: 'test', price: 1.00, stock: 0 }) }",
+                  "}, (err, res) => {",
+                  "  pm.collectionVariables.set('outOfStockId', res.json().id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('409 Conflict', () => pm.response.to.have.status(409));",
+                  "const j = pm.response.json();",
+                  "pm.test('Error mentions out of stock', () => pm.expect(j.error).to.include('out of stock'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"cust-unlucky\",\n  \"productIds\": [\"{{outOfStockId}}\"],\n  \"shippingAddress\": {\n    \"street\": \"99 Retry Road\",\n    \"city\": \"Backorderburg\",\n    \"zipCode\": \"10001\",\n    \"country\": \"US\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "400 — Create Order with duplicate product IDs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "const j = pm.response.json();",
+                  "pm.test('Error mentions duplicate', () => pm.expect(j.error.toLowerCase()).to.include('duplicate'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"cust-7341\",\n  \"productIds\": [\n    \"{{productAId}}\",\n    \"{{productAId}}\"\n  ],\n  \"shippingAddress\": {\n    \"street\": \"1 Main St\",\n    \"city\": \"Springfield\",\n    \"zipCode\": \"62701\",\n    \"country\": \"US\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "400 — Create Order missing shipping address",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "const j = pm.response.json();",
+                  "pm.test('Validation error mentions shippingAddress', () => pm.expect(j.error).to.include('Shipping address'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"cust-7341\",\n  \"productIds\": [\"{{productAId}}\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "400 — Create Order with empty product list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "const j = pm.response.json();",
+                  "pm.test('Validation error mentions productIds', () => pm.expect(j.error).to.include('productIds'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-API-Key",    "value": "{{apiKey}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"cust-7341\",\n  \"productIds\": [],\n  \"shippingAddress\": {\n    \"street\": \"1 Main St\",\n    \"city\": \"Springfield\",\n    \"zipCode\": \"62701\",\n    \"country\": \"US\"\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/orders", "host": ["{{baseUrl}}"], "path": ["api","orders"] }
+          }
+        },
+        {
+          "name": "404 — Get Order with unknown ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('404 Not Found', () => pm.response.to.have.status(404));",
+                  "const j = pm.response.json();",
+                  "pm.test('Error message present', () => pm.expect(j.error).to.include('not found'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-API-Key", "value": "{{apiKey}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api","orders","00000000-0000-0000-0000-000000000000"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

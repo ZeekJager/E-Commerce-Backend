@@ -1,29 +1,47 @@
 package com.example.ecommerce.infrastructure.persistence.entities;
 
 import jakarta.persistence.*;
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+@Getter
+@Setter
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
     @Id
-    private String id;
+    private UUID id;
+
+    @Version
+    private Long version;
+
+    @Column(nullable = false)
     private String customerId;
-    private double totalAmount;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal totalAmount;
+
+    @Column(nullable = false, length = 3)
+    private String currency;
 
     @ElementCollection
-    private List<String> productIds;
+    @CollectionTable(name = "order_product_ids", joinColumns = @JoinColumn(name = "order_id"))
+    @Column(name = "product_id", nullable = false)
+    private List<UUID> productIds;
 
-    // Getters and setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    @Column(nullable = false)
+    private String shippingStreet;
 
-    public String getCustomerId() { return customerId; }
-    public void setCustomerId(String customerId) { this.customerId = customerId; }
+    @Column(nullable = false)
+    private String shippingCity;
 
-    public double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
+    @Column(nullable = false)
+    private String shippingZipCode;
 
-    public List<String> getProductIds() { return productIds; }
-    public void setProductIds(List<String> productIds) { this.productIds = productIds; }
+    @Column(nullable = false)
+    private String shippingCountry;
 }

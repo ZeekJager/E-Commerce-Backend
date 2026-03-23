@@ -1,23 +1,28 @@
 package com.example.ecommerce.api.dto;
 
-import lombok.Getter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
-import java.util.Objects;
+import java.math.BigDecimal;
 
-@Getter
 public class ProductRequest {
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Category is required")
     private String category;
-    private double price;
+
+    @Positive(message = "Price must be positive")
+    private BigDecimal price;
+
+    @PositiveOrZero(message = "Stock cannot be negative")
     private int stock;
 
     public ProductRequest() {}
 
-    public ProductRequest(String name, String category, double price, int stock) {
-        this.name = Objects.requireNonNull(name, "Name cannot be null");
-        this.category = Objects.requireNonNull(category, "Category cannot be null");
-        this.price = price;
-        this.stock = stock;
-    }
-
+    public String getName() { return name; }
+    public String getCategory() { return category; }
+    public BigDecimal getPrice() { return price; }
+    public int getStock() { return stock; }
 }
